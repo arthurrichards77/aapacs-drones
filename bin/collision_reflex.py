@@ -16,45 +16,29 @@ def viconCallback(data):
   # need to explicitly ref message store global as I'm writing to it
   global last_tf
   # just store in case I need it
-  last_tf = data.transform
+  last_tf = data
 
 def imuCallback(data):
   # default ref transform
   ref_tf = last_tf
   # suppress reflex under 0.3m altitude
-  if last_tf.translation.z > 0.3:
+  if last_tf.transform.translation.z > 0.3:
     # check for X collision
-    if data.linear_acceleration.x > acc_threshold:
-      # reflex back
-      ref_tf.translation.x = ref_tf.translation.x + pos_bump
-      pub_ref_tf.publish(ref_tf)
-      print 'BUMP! reflex forward'
-    elif data.linear_acceleration.x < -acc_threshold:
+    if data.linear_acceleration.x < -acc_threshold:
       # reflex fowards
-      ref_tf.translation.x = ref_tf.translation.x - pos_bump
+      ref_tf.transform.translation.x = ref_tf.transform.translation.x - pos_bump
       pub_ref_tf.publish(ref_tf)
       print 'BUMP! reflex backward'
-    # check for y collision
-    elif data.linear_acceleration.y > acc_threshold:
-      # reflex back
-      ref_tf.translation.y = ref_tf.translation.y + pos_bump
-      pub_ref_tf.publish(ref_tf)
-      print 'BUMP! reflex right'
-    elif data.linear_acceleration.y < -acc_threshold:
-      # reflex fowards
-      ref_tf.translation.y = ref_tf.translation.y - pos_bump
-      pub_ref_tf.publish(ref_tf)
-      print 'BUMP! reflex left'
 
 rospy.init_node('collision_reflex', anonymous=True)
 # subscribes to vicon and ARDrone IMU
 sub_vicondata = rospy.Subscriber('drone', TransformStamped, viconCallback)
 sub_ref_imu = rospy.Subscriber('ardrone/imu', Imu, imuCallback)
 # publishes to "ref_tf" channel to command drone position
-pub_ref_tf = rospy.Publisher('ref_tf', Transform)
+pub_ref_tf = rospy.Publisher('ref_tf', TransformStamped)
 
 # and for reference position
-last_tf = Transform()
+last_tf = TransformStamped()
 
 try:
   rospy.spin()

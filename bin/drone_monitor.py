@@ -14,7 +14,8 @@ class image_converter:
 
   def __init__(self):
 
-    cv2.namedWindow("Image window", 1)
+    imname = rospy.resolve_name("image")
+    cv2.namedWindow(imname, 1)
     self.bridge = CvBridge()
     self.image_sub = rospy.Subscriber("image",Image,self.callback)
     self.nav_sub = rospy.Subscriber("ardrone/navdata",Navdata,self.navcallback)

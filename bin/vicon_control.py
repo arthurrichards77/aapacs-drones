@@ -71,14 +71,14 @@ def reftfCallback(data):
   # set reference movement to zero
   ref_velocity = Twist()
   # and set position to whatever was received
-  ref_transform.translation.x = data.translation.x
-  ref_transform.translation.y = data.translation.y
-  ref_transform.translation.z = data.translation.z
+  ref_transform.translation.x = data.transform.translation.x
+  ref_transform.translation.y = data.transform.translation.y
+  ref_transform.translation.z = data.transform.translation.z
 
 rospy.init_node('vicon_control', anonymous=True)
 sub_vicondata = rospy.Subscriber('drone', TransformStamped, viconCallback)
 sub_ref_vel = rospy.Subscriber('ref_vel', Twist, refCallback)
-sub_ref_pos = rospy.Subscriber('ref_tf', Transform, reftfCallback)
+sub_ref_pos = rospy.Subscriber('ref_tf', TransformStamped, reftfCallback)
 pub_cmd_vel = rospy.Publisher('cmd_vel', Twist)
 
 # global for velocity memory
