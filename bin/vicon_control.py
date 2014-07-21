@@ -3,10 +3,9 @@ import roslib
 roslib.load_manifest('aapacs_drones')
 import sys
 import rospy
-from ardrone_autonomy.msg import Navdata
 from geometry_msgs.msg import Twist
-from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import Transform
+from geometry_msgs.msg import TransformStamped
 
 def saturate(inp,limit):
   # limit quantity to [-limit,limit]
