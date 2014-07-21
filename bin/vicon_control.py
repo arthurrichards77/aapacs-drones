@@ -91,10 +91,10 @@ ref_transform.translation.z = 1.2
 ref_velocity = Twist()
 
 # grab gain parameters
-kpx = rospy.get_param('~kpx',0.3)
-kdx = rospy.get_param('~kdx',0.6)
-kpy = rospy.get_param('~kpy',0.3)
-kdy = rospy.get_param('~kdy',0.6)
+kpx = rospy.get_param('~kpx',0.6)
+kdx = rospy.get_param('~kdx',0.3)
+kpy = rospy.get_param('~kpy',0.6)
+kdy = rospy.get_param('~kdy',0.3)
 kpz = rospy.get_param('~kpz',0.6)
 
 try:

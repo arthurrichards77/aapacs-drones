@@ -1,12 +1,8 @@
-<launch>
+<launch>	
+
   <group ns = "carlton">
 
-    <node name="driver" pkg="ardrone_autonomy" type="ardrone_driver" args="-ip 192.168.10.73">
-    	  <param name="detect_type" value="10" />
-	  <param name="enemy_colors" value="3" />
-	  <param name="detections_select_h" value="32" />
-	  <param name="detections_select_v_hsync" value="128" />
-	  <param name="enemy_without_shell" value="1" />
+    <node name="driver" pkg="ardrone_autonomy" type="ardrone_driver" args="-ip 192.168.10.73">    	
    </node>
 
     <node name="teleop" pkg="drone_teleop" type="drone_teleop.py" output="screen">
@@ -18,10 +14,10 @@
     <node name="control" pkg="aapacs_drones" type="vicon_control.py">
       <remap from="drone" to="/vicon/Carlton/Carlton" />
       <remap from="cmd_vel" to="control_vel" />
-      <param name="kpx" value="0.3" />
-      <param name="kdx" value="0.6" />
-      <param name="kpy" value="0.3" />
-      <param name="kdy" value="0.6" />
+      <param name="kpx" value="0.6" />
+      <param name="kdx" value="0.3" />
+      <param name="kpy" value="0.6" />
+      <param name="kdy" value="0.3" />
       <param name="kpz" value="0.8" />
     </node>
     

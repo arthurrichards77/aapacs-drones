@@ -14,16 +14,22 @@ class image_converter:
 
   def __init__(self):
 
-    imname = rospy.resolve_name("image")
-    cv2.namedWindow(imname, 1)
+    self.imname = rospy.resolve_name("image")
+    cv2.namedWindow(self.imname, 1)
     self.bridge = CvBridge()
     self.image_sub = rospy.Subscriber("image",Image,self.callback)
     self.nav_sub = rospy.Subscriber("ardrone/navdata",Navdata,self.navcallback)
+    self.msg_sub = rospy.Subscriber("monitor/status_msg",String,self.msgcallback)
     self.last_batt = 100
+    self.status_msg = "Status"
 
   def navcallback(self,data):
     # store the battery percentage
     self.last_batt = data.batteryPercent
+
+  def msgcallback(self,data):
+    # store the status message
+    self.status_msg = data.data
 
   def callback(self,data):
     try:
@@ -34,12 +40,13 @@ class image_converter:
     # conversion from fuerte bridge format to new opencv
     cv_image = numpy.asarray(cv1_image)
 
-    # circle tag location, if any seen    
+    # show battery percentage and status message
     screen_msg="Battery = %i percent" % self.last_batt
     cv2.putText(cv_image, screen_msg, (20,20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255)
+    cv2.putText(cv_image, self.status_msg, (20,40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, 255)
 
     # show the image
-    cv2.imshow("Image window", cv_image)
+    cv2.imshow(self.imname, cv_image)
     cv2.waitKey(3)
 
 def main(args):

@@ -8,6 +8,7 @@ from geometry_msgs.msg import Twist
 from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import Transform
 from sensor_msgs.msg import Imu
+from std_msgs.msg import String
 
 acc_threshold = 0.8
 pos_bump = 0.3
@@ -28,6 +29,8 @@ def imuCallback(data):
       # reflex fowards
       ref_tf.transform.translation.x = ref_tf.transform.translation.x - pos_bump
       pub_ref_tf.publish(ref_tf)
+      pub_msg.publish('BUMP! Back away')
+      rospy.loginfo('Bump: back away')
       print 'BUMP! reflex backward'
 
 rospy.init_node('collision_reflex', anonymous=True)
@@ -36,6 +39,8 @@ sub_vicondata = rospy.Subscriber('drone', TransformStamped, viconCallback)
 sub_ref_imu = rospy.Subscriber('ardrone/imu', Imu, imuCallback)
 # publishes to "ref_tf" channel to command drone position
 pub_ref_tf = rospy.Publisher('ref_tf', TransformStamped)
+# publisher for status message to monitor
+pub_msg = rospy.Publisher('monitor/status_msg',String)
 
 # and for reference position
 last_tf = TransformStamped()
