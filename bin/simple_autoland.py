@@ -33,7 +33,7 @@ def navCallback(data):
   # only used in state 3 (landing)
   if currState==3:
     # if I'm close to the ground, land anyway
-    if data.altd<200:
+    if data.altd<300:
       pub_land.publish(Empty())
       rospy.loginfo('Control timeout - landing')
       pub_msg.publish('Control timeout - land')

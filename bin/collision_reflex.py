@@ -31,7 +31,6 @@ def imuCallback(data):
       pub_ref_tf.publish(ref_tf)
       pub_msg.publish('BUMP! Back away')
       rospy.loginfo('Bump: back away')
-      print 'BUMP! reflex backward'
 
 rospy.init_node('collision_reflex', anonymous=True)
 # subscribes to vicon and ARDrone IMU
