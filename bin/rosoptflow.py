@@ -13,11 +13,12 @@ from aapacs_drones.msg import OptflowLK
 class image_converter:
 
   def __init__(self):
-    cv2.namedWindow("Optic Flow window", 1)
+
+    cv2.namedWindow("Optic flow window", 1)
     self.bridge = CvBridge()
 
     # get the image topic to subscribe to
-    print "Subscribing to " + rospy.resolve_name('image')
+    rospy.loginfo("Subscribing to " + rospy.resolve_name('image'))
     self.image_sub = rospy.Subscriber('image',Image,self.callback)
     self.data_pub = rospy.Publisher('opticflow',OptflowLK)
 
@@ -25,7 +26,8 @@ class image_converter:
     self.frame_ctr = 0
 
     # number of frames between fresh feature track
-    self.corner_interval = 30
+    self.corner_interval = rospy.get_param('~corner_interval',10)
+    rospy.loginfo("Refreshing corners every %i frames"%self.corner_interval)
 
     # params for ShiTomasi corner detection
     self.feature_params = dict( maxCorners = 100,
@@ -128,7 +130,7 @@ class image_converter:
       img = cv2.add(cv_image_col,self.mask)
       
       # show output and wait for something to happen
-      cv2.imshow("Image window", img)
+      cv2.imshow("Optic flow window", img)
       cv2.waitKey(3)
 
     # store image for next time
