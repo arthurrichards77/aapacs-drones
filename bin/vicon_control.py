@@ -3,6 +3,7 @@ import roslib
 roslib.load_manifest('aapacs_drones')
 import sys
 import rospy
+import tf
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Transform
 from geometry_msgs.msg import TransformStamped
@@ -49,6 +50,11 @@ def viconCallback(data):
       ref_transform.translation.x = ref_transform.translation.x + delta_t*ref_velocity.linear.x*ref_vel_scale
       ref_transform.translation.y = ref_transform.translation.y + delta_t*ref_velocity.linear.y*ref_vel_scale
       ref_transform.translation.z = ref_transform.translation.z + delta_t*ref_velocity.linear.z*ref_vel_scale
+      # publish the reference as a transform
+      pub_ref_tf.sendTransform((ref_transform.translation.x, ref_transform.translation.y, ref_transform.translation.z),
+                               (0.0, 0.0, 0.0, 1.0),
+                               rospy.Time.now(),
+                               "drone_ref", "world")
     except ValueError as e:
       print 'Nothing yet'
     # store it for next time
@@ -89,6 +95,7 @@ sub_ref_vel = rospy.Subscriber('ref_vel', Twist, refCallback)
 sub_ref_pos = rospy.Subscriber('ref_tf', TransformStamped, reftfCallback)
 sub_nudge = rospy.Subscriber('ref_nudge', Transform, nudgeCallback)
 pub_cmd_vel = rospy.Publisher('cmd_vel', Twist)
+pub_ref_tf = tf.TransformBroadcaster()
 
 # global for velocity memory
 last_msg = TransformStamped()
