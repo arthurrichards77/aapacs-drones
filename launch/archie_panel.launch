@@ -4,7 +4,7 @@
 
   <group ns = "$(arg drone_name)">
 
-    <include file="$(find aapacs_drones)/launch/drone_notrack.xml">
+    <include file="$(find aapacs_drones)/launch/drone_notrack.launch">
       <arg name="drone_ip" value="192.168.10.71" />
     </include>
 
