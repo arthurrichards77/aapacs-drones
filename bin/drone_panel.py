@@ -35,6 +35,13 @@ class App:
     self.rt_vel = Twist()
     self.rt_vel.linear.y = -0.1
 
+    # yaw messages
+    self.yaw_l = Twist()
+    self.yaw_l.angular.z = 0.1
+
+    self.yaw_r = Twist()
+    self.yaw_r.angular.z = -0.1
+
     # quit button
     self.quit_button = Button(frame, text="Quit", command=frame.quit)
     self.quit_button.grid(row=0, column=4)
@@ -63,6 +70,14 @@ vel_pub.publish(self.lf_vel))
     self.right = Button(frame, text='RIGHT', command=lambda: self.
 vel_pub.publish(self.rt_vel))
     self.right.grid(row=2, column=2, padx=10, pady=10)
+
+    self.rightyaw = Button(frame, text='R TURN', command=lambda: self.
+vel_pub.publish(self.yaw_r))
+    self.rightyaw.grid(row=1, column=2, padx=10, pady=10)
+
+    self.leftyaw = Button(frame, text='L TURN', command=lambda: self.
+vel_pub.publish(self.yaw_l))
+    self.leftyaw.grid(row=1, column=0, padx=10, pady=10)
 
     # stop buttons
     self.stop1 = Button(frame, text='STOP', bg="red", command=self.stop_btn)
