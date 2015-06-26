@@ -89,23 +89,35 @@ class App:
     mainframe.pack()
 
     frame_vel = Frame(mainframe, bd=2, relief="groove")
-    frame_vel.grid(row=0, column=0, padx=10, pady=10, columnspan=2)
+    frame_vel.grid(row=0, column=2, padx=10, pady=10, columnspan=2)
 
     frame_pos = Frame(mainframe, bd=2, relief="groove")
-    frame_pos.grid(row=0, column=2, padx=10, pady=10)
+    frame_pos.grid(row=1, column=2, padx=10, pady=10)
 
-    frame_cmd = Frame(mainframe, bd=2, relief="groove")
-    frame_cmd.grid(row=1, column=0, padx=10, pady=10)
+    frame_cmds = Frame(mainframe, bd=2, relief="groove")
+    frame_cmds.grid(row=1, column=0, padx=10, pady=10)
+
+    frame_cmd = Frame(frame_cmds)#, bd=2, relief="groove")
+    frame_cmd.grid(row=1, column=0)#, padx=10, pady=10)
+
+    frame_exps = Frame(mainframe, bd=2, relief="groove")
+    frame_exps.grid(row=1, column=1, padx=10, pady=10)
+
+    frame_laurie = Frame(frame_exps)
+    frame_laurie.grid(row=0, column=0)
+
+    frame_exp = Frame(frame_exps)
+    frame_exp.grid(row=1, column=0)
 
     frame_status = Frame(mainframe, bd=2, relief="groove")
-    frame_status.grid(row=1, column=1, padx=10, pady=10, columnspan=4, sticky="N")
+    frame_status.grid(row=0, column=0, padx=10, pady=10, columnspan=2)#, sticky="N")
 
     frame_ctrl = Frame(frame_status)
     frame_ctrl.grid()
 
     # quit button
-    self.quit_button = Button(mainframe, text="Quit", command=mainframe.quit)
-    self.quit_button.grid(row=0, column=4, sticky="N", padx=10, pady=10)
+    #self.quit_button = Button(mainframe, text="Quit", command=mainframe.quit)
+    #self.quit_button.grid(row=0, column=4, sticky="N", padx=10, pady=10)
 
     ## --------------------------------------------- Velocity buttons --------------------------------------------- ##
     vel_label = Label(frame_vel, text="Velocity Controls", font=("TkDefaultFont", 16))
@@ -134,6 +146,20 @@ class App:
 
     self.right_yaw = Button(frame_vel, text='Yaw R', command=lambda: self.send_vel(self.rt_yaw_vel))
     self.right_yaw.grid(row=1, column=2, padx=10, pady=10)
+
+    ## --------------------------------------------- Diagonal velocity buttons --------------------------------------------- ##
+
+    self.fr = Button(frame_vel, text='', command=lambda: self.send_vel(self.fr_vel))
+    self.fr.grid(row=2, column=2, padx=10, pady=10)
+
+    self.fl = Button(frame_vel, text='', command=lambda: self.send_vel(self.fl_vel))
+    self.fl.grid(row=2, column=0, padx=10, pady=10)
+
+    self.rr = Button(frame_vel, text='', command=lambda: self.send_vel(self.rr_vel))
+    self.rr.grid(row=4, column=2, padx=10, pady=10)
+
+    self.rl = Button(frame_vel, text='', command=lambda: self.send_vel(self.rl_vel))
+    self.rl.grid(row=4, column=0, padx=10, pady=10)
 
     ## --------------------------------------------- Stop buttons --------------------------------------------- ##
     self.stop1 = Button(frame_vel, text='STOP', bg="red", fg="white", command=lambda: self.send_vel(Twist()))
@@ -190,7 +216,7 @@ class App:
     self.yrightn.grid(row=1, column=2, padx=10, pady=10)
 
     ## --------------------------------------------- Nudge radio buttons --------------------------------------------- ##
-    self.nudge_dists = [('5 Metres', 5), ('0.125 Metres', 0.125), ('0.01 Metre', 0.01)]
+    self.nudge_dists = [('0.5 Metres', 0.5), ('0.125 Metres', 0.125), ('0.01 Metre', 0.01)]
     self.nudge_dist = DoubleVar()
     self.nudge_dist.set(0.01) # Initial value
 
@@ -202,52 +228,57 @@ class App:
 
 
     # Commands frame
-    cmd_label = Label(frame_cmd, text="Commands", font=("TkDefaultFont", 16))
+    cmd_label = Label(frame_cmds, text="Commands", font=("TkDefaultFont", 16))
     cmd_label.grid(row=0, column=0, padx=10, pady=10)
 
     self.land = Button(frame_cmd, text='Land', bg="red", fg="white", font=("TkDefaultFont", 16),
                        command=lambda: self.cmd_pub.publish('land'))
-    self.land.grid(row=3, column=0, padx=10, pady=10)
+    self.land.grid(row=1, column=0, padx=10, pady=10)
 
     self.takeoff = Button(frame_cmd, text='Take off', font=("TkDefaultFont", 16),
                           command=lambda: self.cmd_pub.publish('takeoff'))
-    self.takeoff.grid(row=1, column=0, padx=10, pady=10)
+    self.takeoff.grid(row=0, column=0, padx=10, pady=10)
 
-    self.explocal = Button(frame_cmd, text='Experiment (local)',
-                           command=lambda: self.cmd_pub.publish('exp:reflocal'))
-    self.explocal.grid(row=1, column=1, padx=10, pady=10)
+    self.exptype = StringVar()
+    self.exptype.set('nudge')
+    self.expselect = OptionMenu(frame_exp, self.exptype, 'local','global','nudge','vel')
+    self.expselect.grid(row=3, column=1, padx=10, pady=10)
 
-    self.expglobal = Button(frame_cmd, text='Experiment (global)',
-                            command=lambda: self.cmd_pub.publish('exp:refglobal'))
-    self.expglobal.grid(row=2, column=1, padx=10, pady=10)
+    self.exp = Button(frame_exp, text='Experiment', font=("TkDefaultFont", 16),
+                           command=lambda: self.cmd_pub.publish('exp:ref' + self.exptype.get())) #('exp:refnudge'))
+    self.exp.grid(row=3, column=0, padx=10, pady=10)
 
-    self.slambutton = Button(frame_cmd, text='SLAM Start',
-                            command=lambda: self.slam_pub.publish(1))
-    self.slambutton.grid(row=2, column=2, padx=10, pady=10)
-
-    self.slambutton = Button(frame_cmd, text='SLAM Stop',
-                            command=lambda: self.slam_pub.publish(0))
-    self.slambutton.grid(row=3, column=2, padx=10, pady=10)
-
-    self.pathbutton = Button(frame_cmd, text='Path Start',
-                            command=lambda: self.path_pub.publish(1))
-    self.pathbutton.grid(row=0, column=2, padx=10, pady=10)
-
-    self.pathbutton = Button(frame_cmd, text='Path Stop',
-                            command=lambda: self.path_pub.publish(0))
-    self.pathbutton.grid(row=1, column=2, padx=10, pady=10)
+    #self.expglobal = Button(frame_cmd, text='Experiment (global)',
+    #                        command=lambda: self.cmd_pub.publish('exp:refglobal'))
+    #self.expglobal.grid(row=2, column=1, padx=10, pady=10)
 
     self.hover = Button(frame_cmd, text='Hover', font=("TkDefaultFont", 16),
                         command=lambda: self.cmd_pub.publish('hover'))
-    self.hover.grid(row=2, column=0, padx=10, pady=10)
+    self.hover.grid(row=0, column=1, padx=10, pady=10)
 
     self.hover = Button(frame_cmd, text='Return Home', font=("TkDefaultFont", 16),
                         command=lambda: self.cmd_pub.publish('returnhome'))
-    self.hover.grid(row=3, column=1, padx=10, pady=10)
+    self.hover.grid(row=1, column=1, padx=10, pady=10)
 
-    self.resetI = Button(frame_cmd, text='Reset Integ.',
-                           command=lambda: self.cmd_pub.publish('resetintegrators'))
-    self.resetI.grid(row=0, column=1, padx=10, pady=10)
+    #self.resetI = Button(frame_cmd, text='Reset Integ.',
+    #                       command=lambda: self.cmd_pub.publish('resetintegrators'))
+    #self.resetI.grid(row=0, column=1, padx=10, pady=10)
+
+    self.slambutton = Button(frame_laurie, text='SLAM Start',
+                            command=lambda: self.slam_pub.publish(1))
+    self.slambutton.grid(row=0, column=1, padx=10, pady=10)
+
+    self.slambutton = Button(frame_laurie, text='SLAM Stop',
+                            command=lambda: self.slam_pub.publish(0))
+    self.slambutton.grid(row=1, column=1, padx=10, pady=10)
+
+    self.pathbutton = Button(frame_laurie, text='Path Start',
+                            command=lambda: self.path_pub.publish(1))
+    self.pathbutton.grid(row=0, column=0, padx=10, pady=10)
+
+    self.pathbutton = Button(frame_laurie, text='Path Stop',
+                            command=lambda: self.path_pub.publish(0))
+    self.pathbutton.grid(row=1, column=0, padx=10, pady=10)
 
     # Status frame
     cmd_label = Label(frame_status, text="", font=("TkDefaultFont", 16), width=35)
@@ -256,6 +287,11 @@ class App:
     self.status_label = Label(frame_status, text="Current state: ", font=("TkDefaultFont", 14))
     self.status_label.grid(row=0, column=0, padx=2, pady=2, sticky="W", columnspan=3)
     self.status_label_populated = 0
+
+    # insert traffic light here, on column 2
+    self.canvas = Canvas(frame_status, width=20, height=20)
+    self.canvas.grid(row=0,column=2,sticky=E)
+    self.switch_led = self.canvas.create_oval(1,1,18,18,fill='red')
 
     self.info_label = Label(frame_status, text="Last message:", font=("TkDefaultFont", 10))
     self.info_label.grid(row=1, column=0, padx=2, pady=2, sticky="W", columnspan=3)
@@ -374,6 +410,10 @@ class App:
   def asctec_callback(self, data):
     self.batt_label.config(text="Battery: " + "{:04.1f}".format(data.battery_voltage_1/1000.0))
     self.ftime_label.config(text="Airborne: " + "{:02.0f}m".format(data.up_time/60) + " {:02.0f}s".format(data.up_time%60))
+    if data.flightMode == 97:
+      self.canvas.itemconfig(self.switch_led, fill='green')
+    else:
+      self.canvas.itemconfig(self.switch_led, fill='red')
 
   def ctrl_callback(self, data):
     self.ctrl_xval_label.config(text="{:5.2f}".format(data.linear.y)) #data.data[0]))
