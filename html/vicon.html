@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>Pelican preflight wizard</title>
+</head>
+<body onload="disableNext()">
+
+<h1>Vicon</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<li>Power on the Vicon Giganet box (far side of the arena)<input type="checkbox" id="giga" onclick="enableNext()" /></li>
+<li>Start tracker and wait for the cameras to enable (red glow).<input type="checkbox" id="glow" onclick="enableNext()" /></li>
+<img src="tracker_cap.png" width="800px" />
+<li>Enable tracking of the Pelican used.  Does Tracker show it being tracked?<input type="checkbox" id="track" onclick="enableNext()" /></li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='transmitter.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='ros.html'">Next</button>
+<button type = "button" onClick="window.location.href='start.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+
+if (document.getElementById("giga").checked) {
+if (document.getElementById("glow").checked) {
+if (document.getElementById("track").checked) {
+  document.getElementById("btn_nxt").disabled = false;
+}
+}
+}
+
+}
+</script>
+
+</body>

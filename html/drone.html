@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>Pelican preflight wizard</title>
+</head>
+<body onload="disableNext()">
+
+<h1>Drone</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<img src="IMG_1628.JPG" width="600px" />
+<img src="IMG_1629.JPG" width="600px" />
+<li>Place drone in arena, on origin, with orange arm away from control desk <input type="checkbox" id="place" onclick="enableNext()" /></li>
+<img src="IMG_1631.JPG" width="800px" />
+<li>Plug in battery to flying lead and switch on.  You should see lights flash and hear beeps <input type="checkbox" id="beep" onclick="enableNext()" /></li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='battery.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='transmitter.html'">Next</button>
+<button type = "button" onClick="window.location.href='start.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+
+if (document.getElementById("place").checked) {
+if (document.getElementById("beep").checked) {
+  document.getElementById("btn_nxt").disabled = false;
+}
+}
+
+}
+</script>
+
+</body>

@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>Pelican preflight wizard</title>
+</head>
+<body onload="disableNext()">
+
+<h1>Transmitter</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<img src="IMG_1632.JPG" width="600px" />
+<img src="IMG_1634.JPG" width="600px" />
+<li>Use Futaba transmitter with tape on handle matching drone ID colour <input type="checkbox" id="match" onclick="enableNext()" /></li>
+<li>All switches up and/or away on the transmitter <input type="checkbox" id="switch" onclick="enableNext()" /></li>
+<img src="IMG_1637.JPG" width="600px" />
+<li>Power on transmitter.  Check voltage 10V or higher. <input type="checkbox" id="txon" onclick="enableNext()" /></li>
+<img src="IMG_1636.JPG" width="600px" />
+<li>Test arm the drone.  Left stick down and left.  Do all four rotors spin up? <input type="checkbox" id="arm" onclick="enableNext()" /></li>
+<li>Disarm drone.  Left stick down and right.  Rotors stop? <input type="checkbox" id="disarm" onclick="enableNext()" /></li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='drone.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='vicon.html'">Next</button>
+<button type = "button" onClick="window.location.href='start.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+
+if (document.getElementById("match").checked) {
+if (document.getElementById("switch").checked) {
+if (document.getElementById("txon").checked) {
+if (document.getElementById("arm").checked) {
+if (document.getElementById("disarm").checked) {
+  document.getElementById("btn_nxt").disabled = false;
+}
+}
+}
+}
+}
+
+}
+</script>
+
+</body>

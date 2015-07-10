@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>Pelican preflight wizard</title>
+</head>
+<body onload="disableNext()">
+
+<h1>ROS</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<li>Ensure the Xbee transciever (if you're using it) matches the drone you're using (7 = blue; 8=green)<input type="checkbox" id="xbee" onclick="enableNext()" /></li>
+<li>Launch your ROS activity, <input type="checkbox" id="launch" onclick="enableNext()" /> e.g. <pre>roslaunch aapacs_drones quad_control_pelican_blue.launch</pre> or <pre>roslaunch aapacs_drones quad_control_pelican_green.launch</pre> </li>
+<img src="peli_gui.png" width="800px" />
+<li>Check voltage reported similar to last battery test<input type="checkbox" id="battv" onclick="enableNext()" /></li>
+<li>Check Vicon tracking reported OK e.g. <pre>rostopic echo /vicon/PelicanBlue/PelicanBlue</pre> or <pre>rostopic echo /vicon/PelicanGreen/PelicanGreen</pre> 
+Check translation approx (0,0,0.2) and quaternion approx (0,0,0,1) <input type="checkbox" id="vicon" onclick="enableNext()" /></li>
+<li>Check drone comms: <pre>rostopic echo /asctec/RC_DATA</pre>
+Wiggle transmitter sticks and confirm response via ROS.<input type="checkbox" id="sticks" onclick="enableNext()" /></li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='vicon.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='eyes.html'">Next</button>
+<button type = "button" onClick="window.location.href='start.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+
+if (document.getElementById("xbee").checked) {
+if (document.getElementById("launch").checked) {
+if (document.getElementById("battv").checked) {
+if (document.getElementById("vicon").checked) {
+if (document.getElementById("sticks").checked) {
+  document.getElementById("btn_nxt").disabled = false;
+}
+}
+}
+}
+}
+
+}
+</script>
+
+</body>

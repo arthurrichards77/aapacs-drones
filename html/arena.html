@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>Pelican preflight wizard - Arena</title>
+</head>
+<body onload="disableNext()">
+
+<h1>Arena</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<li>Tension barrier closed <input type="checkbox" id="barrier" onclick="enableNext()" /></li>
+<li>All curtains closed <input type="checkbox" id="curtain" onclick="enableNext()" /></li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='byebye.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='battery.html'">Next</button>
+<button type = "button" onClick="window.location.href='byebye.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+  if (document.getElementById("barrier").checked) {
+    if (document.getElementById("curtain").checked) {
+      document.getElementById("btn_nxt").disabled = false;
+    }
+  }
+}
+</script>
+
+</body>

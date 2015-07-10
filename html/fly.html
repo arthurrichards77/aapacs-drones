@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>Pelican preflight wizard</title>
+</head>
+<body onload="disableNext()">
+
+<h1>Fly</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<li>On the transmitter, ensure left stick is full down and right stick is neutral. <input type="checkbox" id="sticks" onclick="enableNext()" /></li>
+<li>Pull switch G towards you.  IF ANYTHING GOES WRONG, PUSH SWITCH G BACK.  This is your emergency stop.  Keep the transmitter close at all times. <input type="checkbox" id="switch" onclick="enableNext()" /></li>
+<img src="peli_gui.png" width="800px" />
+<li>Ready.  On the GUI, press "Take off".</li>
+<li>Use the velocity buttons to set the drone moving or the nudge buttons to move it a fixed amount.  Press Land at any time to stop and land.</li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='eyes.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='start.html'">Finish</button>
+<button type = "button" onClick="window.location.href='start.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+
+if (document.getElementById("sticks").checked) {
+if (document.getElementById("switch").checked) {
+if (document.getElementById("crowd").checked) {
+  document.getElementById("btn_nxt").disabled = false;
+}
+}
+}
+
+}
+</script>
+
+</body>

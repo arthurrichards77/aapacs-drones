@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>Pelican preflight wizard</title>
+</head>
+<body onload="disableNext()">
+
+<h1>Eyes</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<li>Warn anyone else in the arena that you're about to take off. <input type="checkbox" id="warn" onclick="enableNext()" /></li>
+<li>Put goggles on.  Make sure everyone else present has goggles on. <input type="checkbox" id="goggles" onclick="enableNext()" /></li>
+<li>Look around the arena for excessive spectators or people about to walk in. <input type="checkbox" id="crowd" onclick="enableNext()" /></li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='ros.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='fly.html'">Next</button>
+<button type = "button" onClick="window.location.href='start.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+
+if (document.getElementById("warn").checked) {
+if (document.getElementById("goggles").checked) {
+if (document.getElementById("crowd").checked) {
+  document.getElementById("btn_nxt").disabled = false;
+}
+}
+}
+
+}
+</script>
+
+</body>

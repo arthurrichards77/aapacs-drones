@@ -1,0 +1,49 @@
+<html>
+<head>
+<title>Pelican preflight wizard</title>
+</head>
+<body onload="disableNext()">
+
+<h1>Battery</h1>
+
+<hr/>
+<form id="checklist">
+<ol>
+<img src="IMG_1623.JPG" width="600px" />
+<li>Using correct AscTec powerpack <input type="checkbox" id="pack" onclick="enableNext()" /></li>
+<li>Battery not swolen or damaged <input type="checkbox" id="swell" onclick="enableNext()" /></li>
+<img src="IMG_1624.JPG" width="600px" />
+<li>Battery checked with 12.0V total or more <input type="checkbox" id="testV" onclick="enableNext()" /></li>
+<img src="IMG_1627.JPG" width="600px" />
+<li>All cells within 0.1V difference <input type="checkbox" id="cellV" onclick="enableNext()" /></li>
+</ol>
+</form>
+<hr/>
+
+<form id="nav">
+<button type = "button" onClick="window.location.href='arena.html'">Previous</button>
+<button id="btn_nxt" type = "button" onClick="window.location.href='drone.html'">Next</button>
+<button type = "button" onClick="window.location.href='start.html'">Cancel</button>
+</form>
+
+<script>
+function disableNext() {
+    document.getElementById("btn_nxt").disabled = true;
+}
+</script>
+
+<script>
+function enableNext() {
+if (document.getElementById("pack").checked) {
+if (document.getElementById("swell").checked) {
+if (document.getElementById("testV").checked) {
+if (document.getElementById("cellV").checked) {
+  document.getElementById("btn_nxt").disabled = false;
+}
+}
+}
+}
+}
+</script>
+
+</body>
