@@ -56,10 +56,10 @@
 
     <param name="fence/min_x" type="double" value="-2" />
     <param name="fence/max_x" type="double" value="2" />
-    <param name="fence/min_y" type="double" value="-4" />
-    <param name="fence/max_y" type="double" value="4" />
+    <param name="fence/min_y" type="double" value="-3" />
+    <param name="fence/max_y" type="double" value="3" />
     <param name="fence/min_z" type="double" value="0" />
-    <param name="fence/max_z" type="double" value="3" />
+    <param name="fence/max_z" type="double" value="1.5" />
     <param name="fence/rel_threshold" type="double" value="2.5" />
 
   </node>
