@@ -1,0 +1,13 @@
+<launch>	
+
+  <arg name="drone_name" value="Target" />
+
+  <group ns = "$(arg drone_name)">
+
+    <node name="targetsim" pkg="aapacs_drones" type="virtual_drone.py" />
+
+    <node name="controlpanel" pkg="aapacs_drones" type="drone_panel.py" />
+
+  </group>
+
+</launch>
