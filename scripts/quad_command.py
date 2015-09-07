@@ -13,7 +13,7 @@ from geometry_msgs.msg import Transform, TransformStamped
 from sensor_msgs.msg import Imu
 from std_msgs.msg import String, Empty, UInt8, Bool
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
-from asctec_msgs.msg import LLStatus
+from aapacs_pelican.msg import LLStatus
 
 class App:
   def __init__(self, master):

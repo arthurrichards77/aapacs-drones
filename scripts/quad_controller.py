@@ -4,7 +4,7 @@ roslib.load_manifest('aapacs_drones')
 import rospy
 import numpy
 import math
-import rospidlib_quad
+import rospidlib.rospidlib_quad as rospidlib_quad
 import tf
 import numpy as np
 from rospy.numpy_msg import numpy_msg
@@ -12,7 +12,7 @@ from rospy_tutorials.msg import Floats
 from geometry_msgs.msg import TransformStamped, Point, Twist
 from std_msgs.msg import Bool, UInt8, String, Empty
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
-from asctec_msgs.msg import LLStatus
+from aapacs_pelican.msg import LLStatus
 
 # Todo:
 # - Add transition between experiment and hover set points, avoid sharp changes in position
