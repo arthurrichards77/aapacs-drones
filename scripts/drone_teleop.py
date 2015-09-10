@@ -44,10 +44,10 @@ if __name__=="__main__":
     	settings = termios.tcgetattr(sys.stdin)
 	print msg
 	
-	pub = rospy.Publisher('cmd_vel', Twist)
-	land_pub = rospy.Publisher('/ardrone/land', Empty)
-	reset_pub = rospy.Publisher('/ardrone/reset', Empty)
-	takeoff_pub = rospy.Publisher('/ardrone/takeoff', Empty)
+	pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+	land_pub = rospy.Publisher('ardrone/land', Empty, queue_size=1)
+	reset_pub = rospy.Publisher('ardrone/reset', Empty, queue_size=1)
+	takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty, queue_size=1)
 
 	rospy.init_node('drone_teleop')
 

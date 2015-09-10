@@ -7,13 +7,14 @@ project(aapacs_drones)
 find_package(catkin REQUIRED COMPONENTS
   aapacs_pelican
   ardrone_autonomy
-#  cv_bridge
+  cv_bridge
 #  drone_teleop
 #  opencv2
   rospid
   rospy
-#  sensor_msgs
+  sensor_msgs
   std_msgs
+  message_generation
   vicon_bridge
 )
 
@@ -51,11 +52,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  OptflowLK.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -72,10 +72,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   sensor_msgs#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -90,7 +90,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES aapacs_drones
 #  CATKIN_DEPENDS aapacs_pelican ardrone_autonomy cv_bridge drone_teleop opencv2 rospid rospy sensor_msgs std_msgs vicon_bridge
-#  DEPENDS system_lib
+  DEPENDS message_runtime #system_lib
 )
 
 ###########
@@ -103,6 +103,10 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
+
+find_package(OpenCV)
+include_directories(${/usr/include/opencv})
+# target_link_libraries(my_awesome_library ${OpenCV_LIBRARIES})
 
 ## Declare a cpp library
 # add_library(aapacs_drones

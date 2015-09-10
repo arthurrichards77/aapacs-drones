@@ -20,7 +20,7 @@ class image_converter:
     # get the image topic to subscribe to
     rospy.loginfo("Subscribing to " + rospy.resolve_name('image'))
     self.image_sub = rospy.Subscriber('image',Image,self.callback)
-    self.data_pub = rospy.Publisher('opticflow',OptflowLK)
+    self.data_pub = rospy.Publisher('opticflow',OptflowLK,queue_size=1)
 
     # running frame counter
     self.frame_ctr = 0
@@ -45,7 +45,7 @@ class image_converter:
 
   def callback(self,data):
     try:
-      cv1_image = self.bridge.imgmsg_to_cv(data, "bgr8")
+      cv1_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
     except CvBridgeError, e:
       print e
 
@@ -109,7 +109,10 @@ class image_converter:
           ave_x_exp = ave_x_exp + (a-c)/(c - 0.5*imwidth)
 
         # normalize averages
-        ave_x_exp = ave_x_exp/outdata.tags_count
+        if outdata.tags_count == 0:
+          ave_x_exp = 0
+        else:
+          ave_x_exp = ave_x_exp/outdata.tags_count
         print outdata.header.stamp.secs,ave_x_exp
 
 
