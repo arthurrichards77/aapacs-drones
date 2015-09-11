@@ -94,7 +94,7 @@ sub_vicondata = rospy.Subscriber('drone', TransformStamped, viconCallback)
 sub_ref_vel = rospy.Subscriber('ref_vel', Twist, refCallback)
 sub_ref_pos = rospy.Subscriber('ref_tf', TransformStamped, reftfCallback)
 sub_nudge = rospy.Subscriber('ref_nudge', Transform, nudgeCallback)
-pub_cmd_vel = rospy.Publisher('cmd_vel', Twist)
+pub_cmd_vel = rospy.Publisher('cmd_vel', Twist, queue_size=1)
 pub_ref_tf = tf.TransformBroadcaster()
 
 # global for velocity memory

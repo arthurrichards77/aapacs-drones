@@ -37,9 +37,9 @@ rospy.init_node('collision_reflex', anonymous=True)
 sub_vicondata = rospy.Subscriber('drone', TransformStamped, viconCallback)
 sub_ref_imu = rospy.Subscriber('ardrone/imu', Imu, imuCallback)
 # publishes to "ref_tf" channel to command drone position
-pub_ref_tf = rospy.Publisher('ref_tf', TransformStamped)
+pub_ref_tf = rospy.Publisher('ref_tf', TransformStamped, queue_size=1)
 # publisher for status message to monitor
-pub_msg = rospy.Publisher('monitor/status_msg',String)
+pub_msg = rospy.Publisher('monitor/status_msg',String, queue_size=1)
 
 # and for reference position
 last_tf = TransformStamped()
