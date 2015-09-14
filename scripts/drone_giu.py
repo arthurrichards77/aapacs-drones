@@ -125,12 +125,12 @@ nudge_pub.publish(self.rt_ndg))
     self.rst = Button(frame, text='Reset', bg="blue", fg="white", command=lambda: self.reset_pub.publish(Empty()))
     self.rst.grid(row=4, column=1, padx=10, pady=10)
 
-    self.msg_pub = rospy.Publisher('monitor/status_msg',String)
-    self.vel_pub = rospy.Publisher('ref_vel',Twist)
-    self.nudge_pub = rospy.Publisher('ref_nudge',Transform)
-    self.land_pub = rospy.Publisher('ardrone/land', Empty)
-    self.reset_pub = rospy.Publisher('ardrone/reset', Empty)
-    self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty)
+    self.msg_pub = rospy.Publisher('monitor/status_msg',String,queue_size=1)
+    self.vel_pub = rospy.Publisher('ref_vel',Twist,queue_size=1)
+    self.nudge_pub = rospy.Publisher('ref_nudge',Transform,queue_size=1)
+    self.land_pub = rospy.Publisher('ardrone/land', Empty,queue_size=1)
+    self.reset_pub = rospy.Publisher('ardrone/reset', Empty,queue_size=1)
+    self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty,queue_size=1)
 
   def stop_btn(self):
     rospy.loginfo("Stop button pressed")

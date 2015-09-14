@@ -2,7 +2,7 @@
 
     <node name="driver" pkg="ardrone_autonomy" type="ardrone_driver" />    	
 
-    <node name="teleop" pkg="drone_teleop" type="drone_teleop.py" output="screen"/>
+    <node name="teleop" pkg="aapacs_drones" type="drone_teleop.py" output="screen"/>
     <node name="controlpanel" pkg="aapacs_drones" type="drone_panel.py" />
     
     <node name="opticflow" pkg="aapacs_drones" type="rosoptflow.py">

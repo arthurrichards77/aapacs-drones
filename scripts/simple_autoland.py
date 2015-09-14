@@ -59,9 +59,9 @@ sub_Navdata = rospy.Subscriber('ardrone/navdata', Navdata, navCallback)
 sub_cmd_vel = rospy.Subscriber('control_vel', Twist, inpVelCallback)
 sub_reset = rospy.Subscriber('ardrone/reset', Empty, resetCallback)
 # publishers
-pub_Cmd = rospy.Publisher('cmd_vel', Twist)
-pub_land = rospy.Publisher('ardrone/land', Empty)
-pub_msg = rospy.Publisher('monitor/status_msg', String)
+pub_Cmd = rospy.Publisher('cmd_vel', Twist,queue_size=1)
+pub_land = rospy.Publisher('ardrone/land', Empty,queue_size=1)
+pub_msg = rospy.Publisher('monitor/status_msg', String,queue_size=1)
 
 # state machine variable
 currState = 0
