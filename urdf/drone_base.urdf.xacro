@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="drone_base" params="prefix">
+
+    <link name="${prefix}base_link" />
+
+    <link name="${prefix}x" />
+
+    <link name="${prefix}xy" />
+
+    <link name="${prefix}xyz" />
+
+    <link name="${prefix}mobile" />
+
+    <joint name="${prefix}move_x" type="prismatic" >
+      <parent link="${prefix}base_link" />
+      <child link="${prefix}x" />
+      <axis xyz="1 0 0" />
+      <limit lower="0" upper="2" effort="100" velocity="100" />
+    </joint>
+
+    <joint name="${prefix}move_y" type="prismatic" >
+      <parent link="${prefix}x" />
+      <child link="${prefix}xy" />
+      <axis xyz="0 1 0" />
+      <limit lower="0" upper="2" effort="100" velocity="100" />
+    </joint>
+
+    <joint name="${prefix}move_z" type="prismatic" >
+      <parent link="${prefix}xy" />
+      <child link="${prefix}xyz" />
+      <axis xyz="0 0 1" />
+      <limit lower="0" upper="2" effort="100" velocity="100" />
+    </joint>
+
+    <joint name="${prefix}turn_z" type="revolute" >
+      <parent link="${prefix}xyz" />
+      <child link="${prefix}mobile" />
+      <axis xyz="0 0 1" />
+      <limit lower="-3.141" upper="3.141" effort="100" velocity="100" />
+    </joint>
+
+  </xacro:macro>
+
+
+</robot>
