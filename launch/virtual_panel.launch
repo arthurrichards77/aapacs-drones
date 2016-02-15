@@ -1,13 +1,11 @@
 <launch>	
 
-  <arg name="drone_name" value="Target" />
+  <param name="robot_description" textfile="$(find aapacs_drones)/urdf/drone.urdf" />
 
-  <group ns = "$(arg drone_name)">
+  <node name="targetsim" pkg="aapacs_drones" type="virtual_drone.py" />
 
-    <node name="targetsim" pkg="aapacs_drones" type="virtual_drone.py" />
+  <node name="controlpanel" pkg="aapacs_drones" type="drone_panel.py" />
 
-    <node name="controlpanel" pkg="aapacs_drones" type="drone_panel.py" />
-
-  </group>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
 </launch>
