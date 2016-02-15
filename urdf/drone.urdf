@@ -1,0 +1,111 @@
+<robot name="mydrone">
+  <link name="base_link"/>
+  <link name="x"/>
+  <link name="xy"/>
+  <link name="xyz"/>
+  <link name="hull">
+    <visual>
+      <geometry>
+        <box size="0.5 0.5 0.05"/>
+      </geometry>
+      <origin xyz="0 0 0.1"/>
+      <material name="hull_color">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.5 0.2"/>
+      </geometry>
+      <origin xyz="0 0 0.1"/>
+    </collision>
+  </link>
+
+  <joint name="flightx" type="prismatic">
+    <axis xyz="1 0 0" />
+    <limit upper="10.0" lower="-10.0" effort="1000.0" velocity="100.0"/>
+    <parent link="base_link"/>
+    <child link="x"/>
+  </joint>
+
+  <joint name="flighty" type="prismatic">
+    <axis xyz="0 1 0" />
+    <limit upper="10.0" lower="-10.0" effort="1000.0" velocity="100.0"/>
+    <parent link="x"/>
+    <child link="xy"/>
+  </joint>
+
+  <joint name="flightz" type="prismatic">
+    <axis xyz="0 0 1" />
+    <limit upper="10.0" lower="0.0" effort="1000.0" velocity="100.0"/>
+    <parent link="xy"/>
+    <child link="xyz"/>
+  </joint>
+
+  <joint name="yaw" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="xyz"/>
+    <child link="hull"/>
+  </joint>
+
+  <link name="fr_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="0.125 0.125 0.1"/>
+      <material name="front_rotor_color">
+        <color rgba="0.8 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="fr_rotor_joint" type="fixed">
+    <parent link="hull"/>
+    <child link="fr_rotor"/>
+  </joint>      
+
+  <link name="fl_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="0.125 -0.125 0.1"/>
+      <material name="front_rotor_color"/>
+    </visual>
+  </link>
+  <joint name="fl_rotor_joint" type="fixed">
+    <parent link="hull"/>
+    <child link="fl_rotor"/>
+  </joint>      
+
+  <link name="br_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="-0.125 0.125 0.1"/>
+      <material name="back_rotor_color">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="br_rotor_joint" type="fixed">
+    <parent link="hull"/>
+    <child link="br_rotor"/>
+  </joint>      
+
+  <link name="bl_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="-0.125 -0.125 0.1"/>
+      <material name="back_rotor_color"/>
+    </visual>
+  </link>
+  <joint name="bl_rotor_joint" type="fixed">
+    <parent link="hull"/>
+    <child link="bl_rotor"/>
+  </joint>      
+
+</robot>
