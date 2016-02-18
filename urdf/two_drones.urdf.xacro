@@ -5,6 +5,8 @@
 
   <link name="base_link" />
 
-  <xacro:drone_base prefix="" base_link_name="base_link" />
+  <xacro:drone_base prefix="drone3_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone2_" base_link_name="base_link" />
 
 </robot>

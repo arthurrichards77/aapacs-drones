@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="drone_base" params="prefix">
-
-    <link name="${prefix}base_link" />
+  <xacro:macro name="drone_base" params="prefix base_link_name">
 
     <link name="${prefix}x" />
 
@@ -14,7 +12,7 @@
     <link name="${prefix}mobile" />
 
     <joint name="${prefix}move_x" type="prismatic" >
-      <parent link="${prefix}base_link" />
+      <parent link="${base_link_name}" />
       <child link="${prefix}x" />
       <axis xyz="1 0 0" />
       <limit lower="0" upper="2" effort="100" velocity="100" />
