@@ -10,6 +10,10 @@ from geometry_msgs.msg import TransformStamped
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from math import cos, sin
 from sensor_msgs.msg import JointState
+from trajectory_msgs.msg import JointTrajectory
+
+# mode - "velocity" or "trajectory"
+movement_mode = 'velocity'
 
 # parent frame name, in which the virtual drone moves
 global_frame = "world"
@@ -26,6 +30,9 @@ js_msg.position = [0.0, 0.0, 0.0, 0.0]
 js_msg.velocity = [0.0, 0.0, 0.0, 0.0]
 js_msg.effort = [0.0, 0.0, 0.0, 0.0]
 
+# executing trajectory
+ref_traj = JointTrajectory()
+
 def saturate(inp,limit):
   # limit quantity to [-limit,limit]
   out = inp
@@ -35,7 +42,11 @@ def saturate(inp,limit):
     out = -limit
   return out
 
-def refUpdate():
+def trajUpdate():
+  return(0,0,0,0)
+
+def velUpdate():
+  # update for reference in velocity mode
   # need to explicitly ref global as I'm writing to it
   global ref_transform
   global js_msg
@@ -44,11 +55,28 @@ def refUpdate():
   # and I just need the yaw
   yawAngle = rpyAngles[2]
   # propagate the reference
-  ref_transform.translation.x = ref_transform.translation.x + delta_t*ref_vel_scale*(ref_velocity.linear.x*cos(yawAngle)-ref_velocity.linear.y*sin(yawAngle))
-  ref_transform.translation.y = ref_transform.translation.y + delta_t*ref_vel_scale*(ref_velocity.linear.x*sin(yawAngle)+ref_velocity.linear.y*cos(yawAngle))
-  ref_transform.translation.z = ref_transform.translation.z + delta_t*ref_vel_scale*ref_velocity.linear.z
+  x = ref_transform.translation.x + delta_t*ref_vel_scale*(ref_velocity.linear.x*cos(yawAngle)-ref_velocity.linear.y*sin(yawAngle))
+  y = ref_transform.translation.y + delta_t*ref_vel_scale*(ref_velocity.linear.x*sin(yawAngle)+ref_velocity.linear.y*cos(yawAngle))
+  z = ref_transform.translation.z + delta_t*ref_vel_scale*ref_velocity.linear.z
   # update the rotation as well
   yawAngle = yawAngle + delta_t*ref_yaw_scale*ref_velocity.angular.z
+  # return the new joint states
+  return (x,y,z,yawAngle)
+
+def refUpdate():
+  # need to explicitly ref global as I'm writing to it
+  global ref_transform
+  global js_msg
+  # update according to what mode we're in
+  if movement_mode == 'velocity':
+    (x,y,z,yawAngle)=velUpdate()
+  elif movement_mode == 'trajectory':
+    (x,y,z,yawAngle)=trajUpdate()
+
+  # put the new states back in the transform memory
+  ref_transform.translation.x = x;
+  ref_transform.translation.y = y;
+  ref_transform.translation.z = z;
   ref_transform.rotation = quaternion_from_euler(0.0, 0.0, yawAngle)
 
   # publish the reference as a transform
@@ -64,10 +92,20 @@ def refUpdate():
 
 def refVelCallback(data):
   global ref_velocity
+  global movement_mode
+  movement_mode = 'velocity'
   ref_velocity = data
+
+def trajCallback(data):
+  global ref_traj
+  global movement_mode
+  movement_mode = 'trajectory'
+  ref_traj = data
 
 def reftfCallback(data):
   global ref_velocity
+  global movement_mode
+  movement_mode = 'velocity'
   # set reference movement to zero
   ref_velocity = Twist()
   # and set position to whatever was received
@@ -76,8 +114,9 @@ def reftfCallback(data):
   ref_transform.translation.z = data.transform.translation.z
 
 rospy.init_node('virtual_drone', anonymous=True)
-sub_ref_vel = rospy.Subscriber('ref_vel', Twist, refVelCallback)
-sub_ref_pos = rospy.Subscriber('ref_tf', TransformStamped, reftfCallback)
+sub_ref_vel = rospy.Subscriber('cmd_vel', Twist, refVelCallback)
+sub_ref_vel = rospy.Subscriber('cmd_traj', JointTrajectory, trajCallback)
+sub_ref_pos = rospy.Subscriber('cmd_tf', TransformStamped, reftfCallback)
 pub_ref_tf = tf.TransformBroadcaster()
 pub_joint_states = rospy.Publisher('/joint_states', JointState)
 

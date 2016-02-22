@@ -99,7 +99,7 @@ vel_pub.publish(self.yaw_l))
     self.rst.grid(row=4, column=1, padx=10, pady=10)
 
     self.msg_pub = rospy.Publisher('monitor/status_msg',String)
-    self.vel_pub = rospy.Publisher('ref_vel',Twist)
+    self.vel_pub = rospy.Publisher('cmd_vel',Twist)
     self.land_pub = rospy.Publisher('ardrone/land', Empty)
     self.reset_pub = rospy.Publisher('ardrone/reset', Empty)
     self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty)
@@ -114,7 +114,6 @@ vel_pub.publish(self.yaw_l))
     self.msg_pub.publish("Hello from control panel")
 
   def check_ros(self):
-    rospy.loginfo("check_ros")
     if rospy.is_shutdown():
       self.my_frame.quit()
     else:
