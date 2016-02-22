@@ -76,7 +76,12 @@ def trajUpdate():
     x = ref_traj.points[ii-1].positions[0]*(1.0-coeff)+ref_traj.points[ii].positions[0]*coeff
     y = ref_traj.points[ii-1].positions[1]*(1.0-coeff)+ref_traj.points[ii].positions[1]*coeff
     z = ref_traj.points[ii-1].positions[2]*(1.0-coeff)+ref_traj.points[ii].positions[2]*coeff
-    yawAngle = ref_traj.points[ii-1].positions[3]*(1.0-coeff)+ref_traj.points[ii].positions[3]*coeff
+    # clever interpolating of yaw to go through discontinuity
+    q1=quaternion_from_euler(0.0, 0.0, ref_traj.points[ii-1].positions[3])
+    q2=quaternion_from_euler(0.0, 0.0, ref_traj.points[ii].positions[3])
+    q_now = (0.0, 0.0, (q1[2]*(1.0-coeff) + q2[2]*coeff), (q1[3]*(1.0-coeff) + q2[3]*coeff))
+    rpyAngles = euler_from_quaternion(q_now)
+    yawAngle = rpyAngles[2]
   # send back the new joints
   return(x,y,z,yawAngle)
   
