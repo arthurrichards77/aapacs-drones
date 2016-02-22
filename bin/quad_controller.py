@@ -74,7 +74,7 @@ class quad_control:
     self.experiment = 0         # Are we in experiment mode
     self.valid_position = 1     # Do we have a valid position (from vicon)
     self.last_position = 0      # Timestamp of most recent position update (from vicon)
-    self.position_timeout = 0.1 # Time in seconds after which the lack of position updates causes failsafe action
+    self.position_timeout = rospy.get_param("~position_timeout",0.1)  # Time in seconds after which the lack of position updates causes failsafe action
     self.ctrl_link_health = 0   # External controller for commands like takeoff/land, link heath, 0=bad, 1=good
     self.last_heartbeat = 0     # Time stamp of last heartbeat message (from controller)
     self.hb_timeout = 3         # Enter failsafe if no heartbeat from controller received for 3 seconds
@@ -154,6 +154,7 @@ class quad_control:
     self.control_rate = rospy.Rate(float(rospy.get_param('~control_rate', '50')))
 
     # Print out the parameters to screen for checking
+    rospy.logwarn('Position timeout = %7.4f seconds', self.position_timeout)
     rospy.logwarn('Autoland thrust = %7.4f', self.autoland_thrustdz)
     rospy.logwarn('neutral/roll = %7.4f', self.neutral_roll)
     rospy.logwarn('neutral/pitch = %7.4f', self.neutral_pitch)
