@@ -32,6 +32,7 @@ js_msg.effort = [0.0, 0.0, 0.0, 0.0]
 
 # executing trajectory
 ref_traj = JointTrajectory()
+ref_traj_start_time = rospy.Duration(0.0)
 
 def saturate(inp,limit):
   # limit quantity to [-limit,limit]
@@ -43,13 +44,45 @@ def saturate(inp,limit):
   return out
 
 def trajUpdate():
-  return(0,0,0,0)
+  # default is to stay where I am
+  x = ref_transform.translation.x
+  y = ref_transform.translation.y
+  z = ref_transform.translation.z
+  # extract Euler angles from current pose
+  rpyAngles = euler_from_quaternion(ref_transform.rotation)
+  # and I just need the yaw
+  yawAngle = rpyAngles[2]
+  # get time relative to current trajectory
+  time_since_traj_sent = rospy.Time.now() - ref_traj_start_time
+  if time_since_traj_sent < ref_traj.points[0].time_from_start:
+    # not started yet - nothing to do
+    rospy.loginfo("Waiting for trajectory to start")    
+  elif time_since_traj_sent > ref_traj.points[-1].time_from_start:
+    # finished - also nothing to do
+    rospy.loginfo("Finished trajectory")
+    ref_velocity = Twist()  
+    movement_mode = 'velocity'
+  else:
+    # find which time segment I am in
+    ii = 1
+    while time_since_traj_sent > ref_traj.points[ii].time_from_start:
+      ii = ii+1
+    rospy.loginfo("On trajectory segment %d" % ii)
+    # find coefficients for linear interpolating
+    t1 = (time_since_traj_sent - ref_traj.points[ii-1].time_from_start)
+    t2 = (ref_traj.points[ii].time_from_start - ref_traj.points[ii-1].time_from_start)
+    coeff = t1.to_sec()/t2.to_sec()
+    # assume joint states in order for now
+    x = ref_traj.points[ii-1].positions[0]*(1.0-coeff)+ref_traj.points[ii].positions[0]*coeff
+    y = ref_traj.points[ii-1].positions[1]*(1.0-coeff)+ref_traj.points[ii].positions[1]*coeff
+    z = ref_traj.points[ii-1].positions[2]*(1.0-coeff)+ref_traj.points[ii].positions[2]*coeff
+    yawAngle = ref_traj.points[ii-1].positions[3]*(1.0-coeff)+ref_traj.points[ii].positions[3]*coeff
+  # send back the new joints
+  return(x,y,z,yawAngle)
+  
 
 def velUpdate():
   # update for reference in velocity mode
-  # need to explicitly ref global as I'm writing to it
-  global ref_transform
-  global js_msg
   # extract Euler angles from current pose
   rpyAngles = euler_from_quaternion(ref_transform.rotation)
   # and I just need the yaw
@@ -98,9 +131,12 @@ def refVelCallback(data):
 
 def trajCallback(data):
   global ref_traj
+  global ref_traj_start_time
   global movement_mode
   movement_mode = 'trajectory'
+  ref_traj_start_time = rospy.Time.now()
   ref_traj = data
+  rospy.loginfo("Got new trajectory")    
 
 def reftfCallback(data):
   global ref_velocity
