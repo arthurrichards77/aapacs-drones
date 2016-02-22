@@ -16,6 +16,8 @@ class App:
     frame=Frame(master, bg="yellow")
     frame.pack()
 
+    self.my_frame = frame
+
     # standard velocity messages
     self.up_vel = Twist()
     self.up_vel.linear.z = 0.1
@@ -111,9 +113,17 @@ vel_pub.publish(self.yaw_l))
     rospy.loginfo("Hello")
     self.msg_pub.publish("Hello from control panel")
 
+  def check_ros(self):
+    rospy.loginfo("check_ros")
+    if rospy.is_shutdown():
+      self.my_frame.quit()
+    else:
+      root.after(1000,app.check_ros)
+
 rospy.init_node('control_panel', anonymous=True)
 
 root = Tk()
 app = App(root)
+root.after(1000,app.check_ros)
 root.mainloop()
 root.destroy()
