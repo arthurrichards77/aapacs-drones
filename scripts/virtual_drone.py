@@ -8,7 +8,7 @@ from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Transform
 from geometry_msgs.msg import TransformStamped
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
-from math import cos, sin
+from math import cos, sin, atan2
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory
 
@@ -77,11 +77,13 @@ def trajUpdate():
     y = ref_traj.points[ii-1].positions[1]*(1.0-coeff)+ref_traj.points[ii].positions[1]*coeff
     z = ref_traj.points[ii-1].positions[2]*(1.0-coeff)+ref_traj.points[ii].positions[2]*coeff
     # clever interpolating of yaw to go through discontinuity
-    q1=quaternion_from_euler(0.0, 0.0, ref_traj.points[ii-1].positions[3])
-    q2=quaternion_from_euler(0.0, 0.0, ref_traj.points[ii].positions[3])
-    q_now = (0.0, 0.0, (q1[2]*(1.0-coeff) + q2[2]*coeff), (q1[3]*(1.0-coeff) + q2[3]*coeff))
-    rpyAngles = euler_from_quaternion(q_now)
-    yawAngle = rpyAngles[2]
+    c1=cos(ref_traj.points[ii-1].positions[3])
+    c2=cos(ref_traj.points[ii].positions[3])
+    s1=sin(ref_traj.points[ii-1].positions[3])
+    s2=sin(ref_traj.points[ii].positions[3])
+    c_now = c1*(1.0-coeff) + c2*coeff
+    s_now = s1*(1.0-coeff) + s2*coeff
+    yawAngle = atan2(s_now,c_now)
   # send back the new joints
   return(x,y,z,yawAngle)
   
