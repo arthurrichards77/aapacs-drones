@@ -10,6 +10,12 @@
   <url>http://ros.org/wiki/arthur_mpo700</url>
   <depend package="urdf"/>
   <depend package="xacro"/>
+  <depend package="tf"/>
+  <depend package="sensor_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="trajectory_msgs"/>
+
+
 
 </package>
 
