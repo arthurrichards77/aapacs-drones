@@ -16,6 +16,8 @@ class App:
     frame=Frame(master, bg="yellow")
     frame.pack()
 
+    self.my_frame = frame
+
     # standard velocity messages
     self.up_vel = Twist()
     self.up_vel.linear.z = 0.1
@@ -96,11 +98,11 @@ vel_pub.publish(self.yaw_l))
     self.rst = Button(frame, text='Reset', bg="blue", fg="white", command=lambda: self.reset_pub.publish(Empty()))
     self.rst.grid(row=4, column=1, padx=10, pady=10)
 
-    self.msg_pub = rospy.Publisher('monitor/status_msg',String,queue_size=1)
-    self.vel_pub = rospy.Publisher('ref_vel',Twist,queue_size=1)
-    self.land_pub = rospy.Publisher('ardrone/land', Empty,queue_size=1)
-    self.reset_pub = rospy.Publisher('ardrone/reset', Empty,queue_size=1)
-    self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty,queue_size=1)
+    self.msg_pub = rospy.Publisher('monitor/status_msg',String)
+    self.vel_pub = rospy.Publisher('cmd_vel',Twist)
+    self.land_pub = rospy.Publisher('ardrone/land', Empty)
+    self.reset_pub = rospy.Publisher('ardrone/reset', Empty)
+    self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty)
 
   def stop_btn(self):
     rospy.loginfo("Stop button pressed")
@@ -111,9 +113,16 @@ vel_pub.publish(self.yaw_l))
     rospy.loginfo("Hello")
     self.msg_pub.publish("Hello from control panel")
 
+  def check_ros(self):
+    if rospy.is_shutdown():
+      self.my_frame.quit()
+    else:
+      root.after(1000,app.check_ros)
+
 rospy.init_node('control_panel', anonymous=True)
 
 root = Tk()
 app = App(root)
+root.after(1000,app.check_ros)
 root.mainloop()
 root.destroy()

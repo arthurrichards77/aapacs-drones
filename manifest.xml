@@ -1,0 +1,16 @@
+<package>
+  <description brief="aapacs_drones">
+
+     aapacs_drones
+
+  </description>
+  <author>viki</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/arthur_mpo700</url>
+  <depend package="urdf"/>
+  <depend package="xacro"/>
+
+</package>
+
+
