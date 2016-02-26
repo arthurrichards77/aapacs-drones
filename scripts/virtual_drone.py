@@ -23,9 +23,14 @@ drone_frame = "virtual_drone"
 ref_vel_scale = 2.0
 ref_yaw_scale = 2.0
 
+# joint names
+my_joint_names = ["move_x","move_y","move_z","turn_z"]
+
+# indices to find joints in trajectory message
+my_joint_inds = [0,1,2,3]
+
 # joint state message
 js_msg = JointState()
-js_msg.name=["flightx","flighty","flightz","yaw"]
 js_msg.position = [0.0, 0.0, 0.0, 0.0]
 js_msg.velocity = [0.0, 0.0, 0.0, 0.0]
 js_msg.effort = [0.0, 0.0, 0.0, 0.0]
@@ -44,6 +49,9 @@ def saturate(inp,limit):
   return out
 
 def trajUpdate():
+  # globals so I can revert to hold mode at end
+  global movement_mode
+  global ref_velocity
   # default is to stay where I am
   x = ref_transform.translation.x
   y = ref_transform.translation.y
@@ -73,14 +81,14 @@ def trajUpdate():
     t2 = (ref_traj.points[ii].time_from_start - ref_traj.points[ii-1].time_from_start)
     coeff = t1.to_sec()/t2.to_sec()
     # assume joint states in order for now
-    x = ref_traj.points[ii-1].positions[0]*(1.0-coeff)+ref_traj.points[ii].positions[0]*coeff
-    y = ref_traj.points[ii-1].positions[1]*(1.0-coeff)+ref_traj.points[ii].positions[1]*coeff
-    z = ref_traj.points[ii-1].positions[2]*(1.0-coeff)+ref_traj.points[ii].positions[2]*coeff
+    x = ref_traj.points[ii-1].positions[my_joint_inds[0]]*(1.0-coeff)+ref_traj.points[ii].positions[my_joint_inds[0]]*coeff
+    y = ref_traj.points[ii-1].positions[my_joint_inds[1]]*(1.0-coeff)+ref_traj.points[ii].positions[my_joint_inds[1]]*coeff
+    z = ref_traj.points[ii-1].positions[my_joint_inds[2]]*(1.0-coeff)+ref_traj.points[ii].positions[my_joint_inds[2]]*coeff
     # clever interpolating of yaw to go through discontinuity
-    c1=cos(ref_traj.points[ii-1].positions[3])
-    c2=cos(ref_traj.points[ii].positions[3])
-    s1=sin(ref_traj.points[ii-1].positions[3])
-    s2=sin(ref_traj.points[ii].positions[3])
+    c1=cos(ref_traj.points[ii-1].positions[my_joint_inds[3]])
+    c2=cos(ref_traj.points[ii].positions[my_joint_inds[3]])
+    s1=sin(ref_traj.points[ii-1].positions[my_joint_inds[3]])
+    s2=sin(ref_traj.points[ii].positions[my_joint_inds[3]])
     c_now = c1*(1.0-coeff) + c2*coeff
     s_now = s1*(1.0-coeff) + s2*coeff
     yawAngle = atan2(s_now,c_now)
@@ -140,10 +148,16 @@ def trajCallback(data):
   global ref_traj
   global ref_traj_start_time
   global movement_mode
-  movement_mode = 'trajectory'
-  ref_traj_start_time = rospy.Time.now()
-  ref_traj = data
-  rospy.loginfo("Got new trajectory")    
+  global my_joint_inds
+  # first check that all required joints are present
+  if all([joint in data.joint_names for joint in my_joint_names]):
+    my_joint_inds = [data.joint_names.index(joint_name) for joint_name in my_joint_names]
+    movement_mode = 'trajectory'
+    ref_traj_start_time = rospy.Time.now()
+    ref_traj = data
+    rospy.loginfo("Got new trajectory")
+  else:
+    rospy.loginfo("Ignoring trajectory - joints missing")
 
 def reftfCallback(data):
   global ref_velocity
@@ -158,10 +172,16 @@ def reftfCallback(data):
 
 rospy.init_node('virtual_drone', anonymous=True)
 sub_ref_vel = rospy.Subscriber('cmd_vel', Twist, refVelCallback)
-sub_ref_vel = rospy.Subscriber('cmd_traj', JointTrajectory, trajCallback)
-sub_ref_pos = rospy.Subscriber('cmd_tf', TransformStamped, reftfCallback)
-pub_ref_tf = tf.TransformBroadcaster()
-pub_joint_states = rospy.Publisher('/joint_states', JointState)
+sub_ref_traj = rospy.Subscriber('/cmd_traj', JointTrajectory, trajCallback)
+#sub_ref_pos = rospy.Subscriber('cmd_tf', TransformStamped, reftfCallback)
+#pub_ref_tf = tf.TransformBroadcaster()
+pub_joint_states = rospy.Publisher('joint_states', JointState)
+
+# use drone name parameter as prefix to joint names
+if rospy.has_param('drone_name'):
+  drone_name = rospy.get_param('drone_name')
+  my_joint_names=[drone_name + "_" + joint_name for joint_name in my_joint_names]
+js_msg.name=my_joint_names
 
 # and for reference position
 ref_transform = Transform()

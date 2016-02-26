@@ -16,7 +16,6 @@ class DronePanel:
     frame=Frame(master, bg="yellow")
     master.title(title)
     frame.pack()
-
     self.my_frame = frame
 
     # standard velocity messages
