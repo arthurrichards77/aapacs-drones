@@ -10,10 +10,11 @@ from geometry_msgs.msg import Transform
 from sensor_msgs.msg import Imu
 from std_msgs.msg import String, Empty
 
-class App:
+class DronePanel:
 
-  def __init__(self, master):
+  def __init__(self, master, title="Drone Control Panel"):
     frame=Frame(master, bg="yellow")
+    master.title(title)
     frame.pack()
 
     self.my_frame = frame
@@ -121,8 +122,11 @@ vel_pub.publish(self.yaw_l))
 
 rospy.init_node('control_panel', anonymous=True)
 
+drone_name=rospy.get_param('drone_name','Drone')
+panel_title=drone_name + " Control Panel"
+
 root = Tk()
-app = App(root)
+app = DronePanel(root, title=panel_title)
 root.after(1000,app.check_ros)
 root.mainloop()
 root.destroy()
