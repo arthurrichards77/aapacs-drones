@@ -5,10 +5,29 @@
 
   <link name="base_link" />
 
-  <xacro:drone_base prefix="drone1_" base_link_name="base_link" />
+  <xacro:if value="$(arg use1)">
+    <xacro:drone_base prefix="$(arg name1)_" base_link_name="base_link" />
+  </xacro:if>
 
-  <xacro:drone_base prefix="drone2_" base_link_name="base_link" />
+  <xacro:if value="$(arg use2)">
+    <xacro:drone_base prefix="$(arg name2)_" base_link_name="base_link" />
+  </xacro:if>
 
-  <xacro:drone_base prefix="drone3_" base_link_name="base_link" />
+  <xacro:if value="$(arg use3)">
+    <xacro:drone_base prefix="$(arg name3)_" base_link_name="base_link" />
+  </xacro:if>
 
+  <xacro:if value="$(arg use4)">
+    <xacro:drone_base prefix="$(arg name4)_" base_link_name="base_link" />
+  </xacro:if>
+
+  <xacro:if value="$(arg use5)">
+    <xacro:drone_base prefix="$(arg name5)_" base_link_name="base_link" />
+  </xacro:if>
+
+  <xacro:if value="$(arg use6)">
+    <xacro:drone_base prefix="$(arg name6)_" base_link_name="base_link" />
+  </xacro:if>
+
+  
 </robot>
