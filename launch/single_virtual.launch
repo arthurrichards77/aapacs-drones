@@ -1,11 +1,16 @@
 <launch>
 
-  	<arg name="model" default="$(find aapacs_drones)/urdf/single_drone.urdf.xacro" />
-	<arg name="gui" default="True" />
-	<param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
-	<param name="use_gui" value="$(arg gui)"/>
-	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find urdf_tutorial)/urdf.rviz" required="true" />
+  <arg name="drone_name" default="drone" />
+  <arg name="use_panel" default="true" />
+
+  <group ns="$(arg drone_name)">
+
+    <param name="drone_name" value="$(arg drone_name)"/>
+
+    <node name="targetsim" pkg="aapacs_drones" type="virtual_drone.py" />
+
+    <node if="$(arg use_panel)" name="controlpanel" pkg="aapacs_drones" type="drone_panel.py" />
+
+  </group>
 
 </launch>

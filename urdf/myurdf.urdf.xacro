@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+  <robot name="drone" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find aapacs_drones)/urdf/drone_base.urdf.xacro" />
+
+  <link name="base_link" />
+
+  <xacro:drone_base prefix="drone1_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone2_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone3_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone4_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone5_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone6_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone7_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone8_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone9_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone10_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone11_" base_link_name="base_link" />
+
+  <xacro:drone_base prefix="drone12_" base_link_name="base_link" />
+
+</robot>

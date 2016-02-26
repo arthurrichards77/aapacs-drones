@@ -17,6 +17,9 @@ class TrajGui:
     self.traj = None
     self.pub_traj = rospy.Publisher('cmd_traj', JointTrajectory)
 
+    # initial directory to look for files
+    self.initdir = rospy.get_param('default_trajectory_folder','~')
+
     # load button
     self.quit_button = Button(frame, text="Load", command=self.load_button)
     self.quit_button.grid(row=0, column=0, padx=10, pady=10)
@@ -56,7 +59,7 @@ class TrajGui:
 
   def load_button(self):
     # default file name
-    file_name=tkFileDialog.askopenfilename()
+    file_name=tkFileDialog.askopenfilename(initialdir=self.initdir)
     if file_name:
       self.load_csv_traj(file_name)
 
