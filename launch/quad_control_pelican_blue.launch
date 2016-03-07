@@ -5,8 +5,15 @@
   <node name="controller" pkg="aapacs_drones" type="quad_controller.py">
     <remap from="drone" to="/vicon/PelicanBlue/PelicanBlue" />
 
+    <param name="neutral/thrust" type="double" value="0.015" />
+
     <param name="is_pelican" type="bool" value="1" />
     <param name="control_rate" type="double" value="50" />
+
+    <param name="position_timeout" type="double" value="0.1" />
+    <param name="takeoff_voltage" type="double" value="11.7" />
+    <param name="amber_voltage" type="double" value="10.6" />
+    <param name="low_voltage" type="double" value="10.2" />
 
     <param name="pid/roll/init_gains/kp" type="double" value="0.15" />
     <param name="pid/roll/init_gains/ki" type="double" value="0.03" />
@@ -33,7 +40,6 @@
 
     <param name="neutral/roll" type="double" value="0" />
     <param name="neutral/pitch" type="double" value="0" />
-    <param name="neutral/thrust" type="double" value="0.015" />
     <param name="neutral/yaw" type="double" value="0" />
 
     <param name="altitudes/zero" type="double" value="0.22" />
@@ -91,7 +97,10 @@
 
   </node>
 
-  <node name="RefSender" pkg="aapacs_drones" type="send_ref.py"/>
+  <!-- node name="RefSender" pkg="aapacs_drones" type="send_ref.py"/ -->
+  <!-- node name="FakePosition" pkg="aapacs_drones" type="fake_position.py">
+    <remap from="drone" to="/vicon/PelicanBlue/PelicanBlue" />
+  </node -->
   <node name="Bridge" pkg="aapacs_pelican" type="pelican_bridge.py">
     <remap from="pelican_ctrl" to="/rcctrl" />
   </node>
