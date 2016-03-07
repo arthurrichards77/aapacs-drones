@@ -39,6 +39,7 @@ class quad_control:
     self.err_pub = rospy.Publisher('err', TransformStamped)                                      # publisher for error between position and reference
     self.status_pub = rospy.Publisher('status', String)                                          # publisher for airfraft status
     self.info_pub = rospy.Publisher('info', String)                                              # publisher for info messages
+    self.battinfo_pub = rospy.Publisher('battinfo', UInt8)                                       # publisher for batter info, 0 = unknown, 1 = good, 2 = amber, 3 = bad
     self.vicon_sub = rospy.Subscriber('drone', TransformStamped, self.vicon_callback)            # subscriber for Vicon data
     self.local_sub = rospy.Subscriber('ref_local', TransformStamped, self.ref_local_callback)    # subscriber for reference point input, relative to quad
     self.nudge_sub = rospy.Subscriber('ref_nudge', TransformStamped, self.ref_nudge_callback)    # subscriber for reference point input, relative to quad
@@ -72,6 +73,8 @@ class quad_control:
     self.state = 0              # Current state, position in list above
     self.ready = 0              # Are we ready to take off
     self.experiment = 0         # Are we in experiment mode
+    self.batt_health = 0        # State of the battery, 0 = unknown, 1 = good, 2 = amber, 3 = bad
+    self.batt_messages = 0      # Count how many battery messages we've received, ignore the first 10
     self.valid_position = 1     # Do we have a valid position (from vicon)
     self.last_position = 0      # Timestamp of most recent position update (from vicon)
     self.position_timeout = rospy.get_param("~position_timeout",0.1)  # Time in seconds after which the lack of position updates causes failsafe action
@@ -94,7 +97,10 @@ class quad_control:
     self.autoland_time = 3      # Number of seconds before spooldown after open loop landing
     self.autoland_start = 0     # Time at which position failsafe was entered
     self.autoland_thrustdz = rospy.get_param("~autoland/thrustdz",-0.03) # Amount to reduce throttle by in autoland
-    self.is_pelican = rospy.get_param("~is_pelican", 0) # Flag, 0 = normal, 1 = pelican. Used to control special pelican logic such as disarming
+    self.is_pelican = rospy.get_param("~is_pelican", 0)                  # Flag, 0 = normal, 1 = pelican. Used to control special pelican logic such as disarming
+    self.takeoff_voltage = rospy.get_param("~takeoff_voltage", 12.0)     # Minimum voltage required for take off, below this don't allow take off
+    self.amber_voltage = rospy.get_param("~amber_voltage", 11.1)         # Voltage below which we turn the display amber - this amber does not get reset until takeoff (detect low spikes)
+    self.low_voltage = rospy.get_param("~low_voltage", 10.5)             # Low voltage, below this we automatically land
     self.asctec_info = LLStatus()
 
     # PID Controller
@@ -155,6 +161,9 @@ class quad_control:
 
     # Print out the parameters to screen for checking
     rospy.logwarn('Position timeout = %7.4f seconds', self.position_timeout)
+    rospy.logwarn('Takeoff voltage (min) = %7.4fv', self.takeoff_voltage)
+    rospy.logwarn('Amber voltage (warn) = %7.4fv', self.amber_voltage)
+    rospy.logwarn('Low voltage (autoland) = %7.4fv', self.low_voltage)
     rospy.logwarn('Autoland thrust = %7.4f', self.autoland_thrustdz)
     rospy.logwarn('neutral/roll = %7.4f', self.neutral_roll)
     rospy.logwarn('neutral/pitch = %7.4f', self.neutral_pitch)
@@ -360,11 +369,11 @@ class quad_control:
         rospy.logwarn('Cant become grounded from %s',self.states[self.state])
 
     # Want to enter spool up state
-    # Allow if we're in grounded state, ready and have vicon
+    # Allow if we're in grounded state, ready and have vicon, and voltage is high enough (if monitored)
     elif newstate == self.states.index('Spoolup'):
       if self.state == self.states.index('Grounded'):
         self.check_ready()
-        if self.valid_position and self.ready and self.ctrl_link_health == 1 and self.outside_fence == 0:
+        if self.valid_position and self.ready and self.ctrl_link_health == 1 and self.outside_fence == 0 and not (self.is_pelican and self.asctec_info.battery_voltage_1 < self.takeoff_voltage*1000):
           self.state = newstate
           self.spoolup_start = rospy.get_rostime().to_sec()
           self.spoolup_complete = 0
@@ -382,6 +391,9 @@ class quad_control:
           elif self.outside_fence != 0:
             rospy.logwarn('Aircraft outside geofence, ignoring take off command')
             self.info_pub.publish('Aircraft outside geofence, ignoring take off command')
+          elif self.is_pelican and self.asctec_info.battery_voltage_1 < self.takeoff_voltage*1000:
+            rospy.logwarn('Battery voltage too low, ignoring take off command')
+            self.info_pub.publish('Battery voltage too low, ignoring take off command')
 
     # Want to enter takeoff state
     # Cannot be commanded directly, changes upon spool up completion
@@ -756,8 +768,29 @@ class quad_control:
 
   ## ---------------------------------- Quadrotor info feedback ---------------------------------- ##
   def asctec_callback(self,data):
+    # Read data
     self.asctec_info = data
-    # rospy.logwarn('Battery = %5.2f', data.battery_voltage_1/1000.0)
+
+    # Update batt colour state
+    self.batt_messages = self.batt_messages + 1
+    if self.batt_messages > 10:
+      previous_batt_health = self.batt_health
+      if data.battery_voltage_1 < self.low_voltage*1000:
+        self.batt_health = 3
+      elif self.batt_health != 3 and (data.battery_voltage_1 < self.amber_voltage*1000 or data.battery_voltage_1 < self.takeoff_voltage*1000):
+        self.batt_health = 2
+      elif self.batt_health == 0:
+        self.batt_health = 1
+
+      # Publish any changes
+      if self.batt_health != previous_batt_health:
+        self.battinfo_pub.publish(self.batt_health)
+    
+    # If the battery voltage is too low then autoland
+    if data.battery_voltage_1 < self.low_voltage*1000 and self.state != self.states.index('Grounded'):
+      self.command_landing()
+      rospy.logwarn('Battery = %5.2f, automatically landing', data.battery_voltage_1/1000.0)
+      self.info_pub.publish('Battery low, automatically landing')
 
   ## ---------------------------------- Quadrotor control calculations ---------------------------------- ##
   def init_autoland(self):

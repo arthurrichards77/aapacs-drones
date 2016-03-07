@@ -299,10 +299,10 @@ class App:
     frame_batt = Frame(frame_status)#, bd=2, relief="groove")
     frame_batt.grid(row=3, column=0, columnspan=3)
 
-    self.batt_label = Label(frame_batt, text="Battery: ##.#v", font=("TkDefaultFont", 12))
+    self.batt_label = Label(frame_batt, text="Battery: ##.#v", font=("TkDefaultFont", 14))
     self.batt_label.grid(row=0, column=0, padx=10, pady=4) #, sticky=N+E+S+W
 
-    self.ftime_label = Label(frame_batt, text="Airborne: ##m ##s", font=("TkDefaultFont", 12))
+    self.ftime_label = Label(frame_batt, text="Airborne: ##m ##s", font=("TkDefaultFont", 14))
     self.ftime_label.grid(row=0, column=1, padx=10, pady=4)
 
     frame_ref = Frame(frame_status, bd=2, relief="groove")
@@ -387,6 +387,7 @@ class App:
     self.err_sub = rospy.Subscriber('err', TransformStamped, self.err_callback)
     self.ctrl_sub = rospy.Subscriber('rcctrl', Twist, self.ctrl_callback)
     self.batt_sub = rospy.Subscriber('batt', UInt8, self.batt_callback)
+    self.battinfo_sub = rospy.Subscriber('battinfo', UInt8, self.battinfo_callback)
     self.asctec_sub = rospy.Subscriber('asctec/LL_STATUS', LLStatus, self.asctec_callback)
 
   def update_vel(self, data):
@@ -405,6 +406,17 @@ class App:
       self.info_label.config(text='Last message: ' + data.data, fg="black")
 
   def batt_callback(self, data):
+    pass
+
+  def battinfo_callback(self, data):
+    if data.data == 1:
+      self.batt_label.config(fg="#00B50C") # Green
+    elif data.data == 2:
+      self.batt_label.config(fg="#C27100") #DB9004") # Orange
+    elif data.data == 3:
+      self.batt_label.config(fg="red")
+    else:
+      self.batt_label.config(fg="black")
     pass
 
   def asctec_callback(self, data):
